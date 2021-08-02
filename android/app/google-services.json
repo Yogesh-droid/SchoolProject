@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "497960135710",
+    "project_id": "aha-school-a0a9e",
+    "storage_bucket": "aha-school-a0a9e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:497960135710:android:1a3370032c29d28219120f",
+        "android_client_info": {
+          "package_name": "com.aha.school.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "497960135710-uap9uqaqsimugbp0eomigras9vrlul6v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9bWizFXquP8OiqOnqWRuajLAB256Etm0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "497960135710-uap9uqaqsimugbp0eomigras9vrlul6v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
