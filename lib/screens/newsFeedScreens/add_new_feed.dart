@@ -1,13 +1,17 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:app/newsFeedRepo/bloc/categories/category_list_bloc.dart' as post;
 import 'package:app/newsFeedRepo/bloc/drop_down_value/drop_down_cubit.dart';
 import 'package:app/newsFeedRepo/bloc/news_feed_switch_bloc/switch_cubit.dart';
+import 'package:app/utils/apis/Apis.dart';
 import 'package:app/utils/modal/newsFeedModels/categories_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddNewFeed extends StatefulWidget {
@@ -19,6 +23,7 @@ class AddNewFeed extends StatefulWidget {
 
 class _AddNewFeedState extends State<AddNewFeed> {
   int  activeState;
+  String image;
   List<String> tagsList=[];
   String category ;
   TextEditingController titleController = TextEditingController();
@@ -104,11 +109,13 @@ class _AddNewFeedState extends State<AddNewFeed> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Browse Image'
+                            image ?? "Browse Image"
                           ),
                           MaterialButton(
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-                              onPressed: (){},
+                              onPressed: (){
+                                _updateImage();
+                              },
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15.0),
@@ -184,7 +191,14 @@ class _AddNewFeedState extends State<AddNewFeed> {
         child: MaterialButton(
           onPressed: () async {
             SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-            var token = await sharedPreferences.get('bearer_token');
+            var email = await sharedPreferences.get('email');
+            var password = await sharedPreferences.get('password');
+            var response1 = await http.get(InfixApi.login(email, password));
+            var token = '';
+            if (response1.statusCode == 200) {
+              Map<String, dynamic> user = jsonDecode(response1.body) as Map;
+              token = user['data']['accessToken'];
+            }
             Map<String,dynamic> body = {
               "title":titleController.text,
               "description":descController.text,
@@ -200,7 +214,7 @@ class _AddNewFeedState extends State<AddNewFeed> {
             headers: {
               "Accept": "application/json",
               "content-type": "application/json",
-              "Authorization":"Bearer "+'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiMzc5ZTk2NjhjMDkyNTA3MDYxNTM3ODQ3NTk0YmY5MDIzNTI3ZWFlYWU3MzQ5Mjk2OTNmYzVhMTY1MTE5YzM2Mzg4MDVhOTYwNzhjNTExNmQiLCJpYXQiOjE2Mjc3MTc0MjUuNzg0NjU1LCJuYmYiOjE2Mjc3MTc0MjUuNzg0NjU4LCJleHAiOjE2NTkyNTM0MjUuNzgzNDc1LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.hrkldaJ97iXXkLuo2DewDJgsCF3kqkyQOgTByG2EzWF6nl622-5nygHGbU0qU9De7OE41X7O-c-Z58jTSIwbe8f9SHasWqHh9zlhNwETVrLlKPSBhqRuSm_KuobuHpoNS9JpVF2ZMSJoIX9-2JEks0gH7MIlLXT6Ehbya3Ye3M5T3W0BlVcbIQ32KGJ8ZeP5WzJbjg5CZLBwE2RHTm4NsQbpECv97110qP8FLetTNy7j4mvz16wQBC3LnV-CcgzjmtkPKkopmYpFC5WQhJBhB5dO4yCTZKeggjFEfv_vJ8lAN1fiZcfuB7TiXeNo6-jnFPjwT75x2Ncd9Y64uEaKQl9hs98Wa1_gz5806AOdoLD61LTxP_SMWBMmCUj-Cl51Iv9UQJxwNxd8txKMXn6CxD4EtOYGSJL1VF-97ZH93yAfh8lj3IDW-t3zAYchCm-e4nNmyapJThM9AyEtSdEjHyqIfuAPu9_W22n5vWxn-IcvouNeJ2YPZG09xnTu3PX-xhJMGP9raESTPXHiJwK3C6yvItDXz98hZt5OoQJ1e3UTWA6a8YxaqsKuqwBKvMRJiQnvmK5hs4v_0rKJRnuGvC66bKKIxV12MuZaUADcqaVjIPp41-8wqesb00MZYfh4C398K3cfxakrqVf8ay1qD1ljidwv6fr7PaZnJwUHsas'
+              "Authorization":token
             }).then((value){
               print(value.body);
             });
@@ -271,6 +285,18 @@ class _AddNewFeedState extends State<AddNewFeed> {
           tagsList.clear();
           context.read<post.CategoryListBloc>().add(post.UpdateValue(id: model.id,value: value));
         });
+  }
+
+  Future _updateImage() async {
+    ImagePicker imagePicker = ImagePicker();
+    var fileImage = await imagePicker.getImage(source: ImageSource.gallery);
+    if (fileImage != null) {
+      setState(() {
+        image = File(fileImage.path).path;
+      });
+    } else {
+
+    }
   }
 
 }

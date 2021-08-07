@@ -13,6 +13,8 @@ import 'package:app/screens/SplashScreen.dart';
 import 'package:app/utils/Utils.dart';
 import 'package:app/newsFeedRepo/bloc/create_feed_bloc.dart';
 
+import 'utils/theme.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MultiBlocProvider(providers: [
@@ -59,7 +61,7 @@ class _MyAppState extends State<MyApp> {
                 ? MaterialApp(
                     title: "app",
                     debugShowCheckedModeBanner: false,
-                    //theme: basicTheme(),
+                    theme: basicTheme(),
                     home: Scaffold(
                       body: Splash(),
                     ),

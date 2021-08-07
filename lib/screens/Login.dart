@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:app/viewNewsFeed/model/loginResponseModel.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:app/utils/Utils.dart';
@@ -248,9 +247,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           ).then((value) async {
                             print('========================================= Api is hitted');
-                             SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-                             sharedPreferences.setString('bearer_token', jsonDecode(value.body)['data']['token']);
-                              print(value.body);
+                            var email = emailController.text;
+                            var password = passwordController.text;
+                            SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+                            sharedPreferences.setString('email', email);
+                            sharedPreferences.setString('password', password);
+                             //SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+                             //sharedPreferences.setString('bearer_token', jsonDecode(value.body)['data']['token']);
+                              //print(value.body);
                           });
                             print("new api response :" + response.toString());
                           },

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:app/utils/apis/Apis.dart';
 import 'package:app/viewNewsFeed/model/viewNewsFeedResponse.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
@@ -18,12 +19,19 @@ class ViewNewsFeedBloc extends Bloc<ViewNewsFeedEvent, ViewNewsFeedState> {
   Stream<ViewNewsFeedState> mapEventToState(ViewNewsFeedEvent event) async* {
     if(event is ViewNewsFeed){
       SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-      var token = await sharedPreferences.get('bearer_token');
+      var email = await sharedPreferences.get('email');
+      var password = await sharedPreferences.get('password');
+      var response1 = await http.get(InfixApi.login(email, password));
+      var token = '';
+      if (response1.statusCode == 200) {
+        Map<String, dynamic> user = jsonDecode(response1.body) as Map;
+        token = user['data']['accessToken'];
+      }
       try{
         print("Bearer "+token);
         var response = await http.get("http://ahaschool.in/api/forum",
         headers: {
-          "Authorization":"Bearer "+token,
+          "Authorization": token,
         });/*.then((value) {
           print(value.request.headers);
           print(value.body);
